@@ -1,4 +1,4 @@
-name: Nightly Sync from Upstream
+name: Nightly Release
 
 on:
   schedule:
@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  sync-branches:
+  sync-develop:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -16,6 +16,7 @@ jobs:
         with:
           ref: develop
           fetch-depth: 0
+          persist-credentials: false
 
       - name: Configure Git
         run: |
@@ -38,6 +39,6 @@ jobs:
       - name: Force Push Changes
         uses: ad-m/github-push-action@master
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          github_token: ${{ secrets.PAT }}
           branch: develop
           force: true
