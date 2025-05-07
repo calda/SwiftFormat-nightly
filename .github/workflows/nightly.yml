@@ -105,6 +105,5 @@ jobs:
 
             Source code is available at https://github.com/${{ github.repository }}/tree/${{ env.TAG_NAME }}
           draft: false
-          make_latest: true
         env:
           GITHUB_TOKEN: ${{ secrets.PAT }}
