@@ -6,6 +6,12 @@ on:
     - cron: '0 0 * * *'
   # Allow manual triggering
   workflow_dispatch:
+    inputs:
+      tag_suffix:
+        description: 'Optional suffix to add to the tag, if the default tag for this date already exists'
+        required: false
+        default: ''
+        type: string
 
 jobs:
   sync-develop:
@@ -60,9 +66,20 @@ jobs:
           git config user.email github-actions@github.com
           
       - name: Generate Tag Name
-        id: tag
+        id: tag_date
         run: |
-          echo "TAG_NAME=SwiftFormat-nightly-$(date +'%Y-%m-%d')" >> $GITHUB_ENV
+          SUFFIX="${{ github.event.inputs.tag_suffix }}"
+          DATE=$(date +'%Y-%m-%d')
+          FORMATTED_DATE=$(date +'%B %-d, %Y')
+          
+          if [ -n "$SUFFIX" ]; then
+            TAG_NAME="nightly-${DATE}-${SUFFIX}"
+          else
+            TAG_NAME="nightly-${DATE}"
+          fi
+          
+          echo "TAG_NAME=$TAG_NAME" >> $GITHUB_ENV
+          echo "FORMATTED_DATE=$FORMATTED_DATE" >> $GITHUB_ENV
           
       - name: Create Tag
         run: |
@@ -81,13 +98,12 @@ jobs:
           name: ${{ env.TAG_NAME }}
           tag_name: ${{ env.TAG_NAME }}
           body: |
-            Nightly build of the SwiftFormat `develop` branch on $(date +'%B %-d, %Y').
+            Nightly build of the SwiftFormat `develop` branch on ${{ env.FORMATTED_DATE }}.
             
             Nightly builds are subject to breaking changes.
 
             Source code is available at https://github.com/${{ github.repository }}/tree/${{ env.TAG_NAME }}
           draft: false
-          prerelease: true
           make_latest: true
         env:
           GITHUB_TOKEN: ${{ secrets.PAT }}
