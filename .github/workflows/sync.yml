@@ -36,5 +36,8 @@ jobs:
           git reset --hard upstream/develop
           
       - name: Force Push Changes
-        run: |
-          git push --force origin develop
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: develop
+          force: true
