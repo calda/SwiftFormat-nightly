@@ -14,6 +14,6 @@ Nightly release URLs and tags in this repo are stable references and can be refe
 
 This repo has a [nightly job](https://github.com/calda/SwiftFormat-nightly/blob/main/.github/workflows/nightly.yml) that:
  - syncronizes this repo's `develop` branch with the [upstream `develop` branch](https://github.com/nicklockwood/SwiftFormat/commits/develop/)
- - publishes a tag and release with the format `nightly-YYYY-MM-DDD`
+ - publishes a tag and release with the format `YYYY-MM-DD`
 
 Artifacts are built and uploaded to each nightly release using the standard [Build Release Artifacts](https://github.com/nicklockwood/SwiftFormat/blob/develop/.github/workflows/release.yml) job in the SwiftFormat repo. This job is automatically triggered after the nightly job publishes a new release.

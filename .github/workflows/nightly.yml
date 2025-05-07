@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
     inputs:
       tag_suffix:
-        description: 'Optional suffix to add to the tag, if the default tag for this date already exists'
+        description: 'Optional build suffix (b, c, d, etc) if the default tag for this date already exists'
         required: false
         default: ''
         type: string
@@ -72,10 +72,11 @@ jobs:
           DATE=$(date +'%Y-%m-%d')
           FORMATTED_DATE=$(date +'%B %-d, %Y')
           
+          # The tag name must start with a number, because we use the tag name as the version number when building the SwiftFormat binary.
           if [ -n "$SUFFIX" ]; then
-            TAG_NAME="nightly-${DATE}-${SUFFIX}"
+            TAG_NAME="${DATE}-${SUFFIX}"
           else
-            TAG_NAME="nightly-${DATE}"
+            TAG_NAME="${DATE}"
           fi
           
           echo "TAG_NAME=$TAG_NAME" >> $GITHUB_ENV
