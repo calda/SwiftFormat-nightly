@@ -118,6 +118,8 @@ jobs:
             
             Nightly builds are subject to breaking changes.
 
+            Documentation for rules and options included in this build: https://github.com/${{ github.repository }}/blob/${{ env.TAG_NAME }}/Rules.md
+
             Source code is available at https://github.com/${{ github.repository }}/tree/${{ env.TAG_NAME }}
           draft: false
         env:
