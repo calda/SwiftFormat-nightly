@@ -16,6 +16,8 @@ on:
 jobs:
   sync-develop:
     runs-on: ubuntu-latest
+    outputs:
+      changes_made: ${{ steps.check_changes.outputs.changes_made }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -38,19 +40,32 @@ jobs:
         run: |
           git fetch upstream
 
-      - name: Hard Reset to Upstream
+      - name: Check if develop branch matches upstream
+        id: check_changes
         run: |
-          git reset --hard upstream/develop
+          LOCAL_COMMIT=$(git rev-parse HEAD)
+          UPSTREAM_COMMIT=$(git rev-parse upstream/develop)
           
-      - name: Force Push Changes
-        uses: ad-m/github-push-action@master
-        with:
-          github_token: ${{ secrets.PAT }}
-          branch: develop
-          force: true
+          echo "Local commit: $LOCAL_COMMIT"
+          echo "Upstream commit: $UPSTREAM_COMMIT"
+
+          if [ "$LOCAL_COMMIT" = "$UPSTREAM_COMMIT" ]; then
+            echo "Develop branch is already in sync with upstream. No changes needed."
+            echo "changes_made=false" >> $GITHUB_OUTPUT
+          else
+            echo "Develop branch differs from upstream. Changes will be made."
+            echo "changes_made=true" >> $GITHUB_OUTPUT
+
+            # Reset to upstream
+            git reset --hard upstream/develop
+
+            # Force Push Changes
+            git push origin develop --force
+          fi
 
   create-release:
     needs: sync-develop
+    if: needs.sync-develop.outputs.changes_made == 'true'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout

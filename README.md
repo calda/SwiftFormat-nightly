@@ -11,12 +11,15 @@ Nightly builds of the [SwiftFormat](https://github.com/nicklockwood/SwiftFormat)
 
 SwiftFormat development happens on the `develop` branch. Commit SHAs on `develop` are unstable since that branch is occasionally rebased.
 
-Nightly release URLs and tags in this repo are stable references and can be used from other repos or tools.
+Artifact URLs and tags in this repo are stable references that can be used from other repos or tools.
 
 ## How?
 
 This repo has a [nightly job](https://github.com/calda/SwiftFormat-nightly/blob/main/.github/workflows/nightly.yml) that:
+ - checks if there have been any changes to the `develop` branch since the last release. If so:
  - synchronizes this repo's `develop` branch with the [upstream `develop` branch](https://github.com/nicklockwood/SwiftFormat/commits/develop/)
  - publishes a tag and release with the format `YYYY-MM-DD`
 
 Artifacts are built and uploaded to each nightly release using the standard [Build Release Artifacts](https://github.com/nicklockwood/SwiftFormat/blob/develop/.github/workflows/release.yml) job in the SwiftFormat repo. This job is automatically triggered after the nightly job publishes a new release.
+
+Nightly builds are skipped if there are no new changes to `develop` since the last build.
