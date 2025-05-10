@@ -58,10 +58,14 @@ jobs:
 
             # Reset to upstream
             git reset --hard upstream/develop
-
-            # Force Push Changes
-            git push origin develop --force
           fi
+
+      - name: Force Push Changes
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.PAT }}
+          branch: develop
+          force: true
 
   create-release:
     needs: sync-develop
