@@ -66,16 +66,21 @@ class OptionDescriptor {
         return true
     }
 
-    /// Formatted list of valid arguments (for boolean or enum-type options)
-    var argumentList: String? {
+    /// List of valid arguments (for boolean or enum-type options)
+    var validArguments: [String]? {
         switch type {
         case let .binary(true: trueValue, false: falseValue):
-            return [trueValue, falseValue].formattedList(default: defaultArgument)
+            return [trueValue, falseValue]
         case let .enum(values):
-            return values.formattedList(default: defaultArgument)
+            return values
         case .array, .set, .int, .text:
             return nil
         }
+    }
+
+    /// Formatted list of valid arguments (for boolean or enum-type options)
+    var argumentList: String? {
+        validArguments?.formattedList(default: defaultArgument)
     }
 
     /// Designated initializer
@@ -969,11 +974,11 @@ struct _Descriptors {
             guard _FormatRules.mapModifiers($0) != nil else {
                 let names = _FormatRules.allModifiers
                     + _FormatRules.semanticModifierGroups
-                let error = "'\($0)' is not a valid modifier"
-                guard let match = $0.bestMatches(in: names).first else {
-                    throw FormatError.options(error)
+                let message = "Unsupported --modifier-order value '\($0)'"
+                guard let match = $0.bestMatch(in: names) else {
+                    throw FormatError.options("\(message). Valid options are \(names.formattedList())")
                 }
-                throw FormatError.options("\(error) (did you mean '\(match)'?)")
+                throw FormatError.options("\(message). Did you mean '\(match)'?")
             }
         }
     )
@@ -1087,11 +1092,12 @@ struct _Descriptors {
             }
             for type in order {
                 guard let concrete = VisibilityCategory(rawValue: type) else {
-                    let errorMessage = "'\(type)' is not a valid parameter for --visibility-order"
-                    guard let match = type.bestMatches(in: VisibilityCategory.allCases.map(\.rawValue)).first else {
-                        throw FormatError.options(errorMessage)
+                    let message = "Unsupported --visibility-order value '\(type)'"
+                    let names = VisibilityCategory.allCases.map(\.rawValue)
+                    guard let match = type.bestMatch(in: names) else {
+                        throw FormatError.options("\(message). Valid options are \(names.formattedList())")
                     }
-                    throw FormatError.options(errorMessage + ". Did you mean '\(match)?'")
+                    throw FormatError.options("\(message). Did you mean '\(match)'?")
                 }
             }
         }
@@ -1104,11 +1110,12 @@ struct _Descriptors {
         validateArray: { order in
             for type in order {
                 guard let concrete = DeclarationType(rawValue: type) else {
-                    let errorMessage = "'\(type)' is not a valid parameter for --type-order"
-                    guard let match = type.bestMatches(in: DeclarationType.allCases.map(\.rawValue)).first else {
-                        throw FormatError.options(errorMessage)
+                    let message = "Unsupported --type-order value '\(type)'"
+                    let names = DeclarationType.allCases.map(\.rawValue)
+                    guard let match = type.bestMatch(in: names) else {
+                        throw FormatError.options("\(message). Valid options are \(names.formattedList())")
                     }
-                    throw FormatError.options(errorMessage + ". Did you mean '\(match)?'")
+                    throw FormatError.options("\(message). Did you mean '\(match)'?")
                 }
             }
         }
