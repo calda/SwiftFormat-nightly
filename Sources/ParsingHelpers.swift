@@ -3241,15 +3241,13 @@ extension Formatter {
         assert(tokens[startOfScope] == .startOfScope("("))
         guard let previousToken = index(of: .nonSpaceOrCommentOrLinebreak, before: startOfScope) else { return nil }
 
-        if tokens[previousToken].isIdentifierOrKeyword || tokens[previousToken].isAttribute {
+        if tokens[previousToken].isIdentifier || tokens[previousToken].isAttribute {
             return previousToken
         }
 
         if [.operator("?", .postfix), .operator("!", .postfix)].contains(tokens[previousToken]),
            let tokenBeforeOperator = index(of: .nonSpaceOrCommentOrLinebreak, before: previousToken),
-           tokens[tokenBeforeOperator].isIdentifierOrKeyword || tokens[tokenBeforeOperator].isAttribute,
-           // `as? (...)` would be a type cast, not a function.
-           tokens[tokenBeforeOperator] != .keyword("as")
+           tokens[tokenBeforeOperator].isIdentifier || tokens[tokenBeforeOperator].isAttribute
         {
             return tokenBeforeOperator
         }
